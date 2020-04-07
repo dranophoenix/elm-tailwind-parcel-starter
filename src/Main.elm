@@ -12,6 +12,20 @@ import Json.Decode.Pipeline exposing (required)
 -- access key or client_id 632WPbpNGm3zBzgCXEio2rhbbAn5sNlGZlPNH0cbBd8
 
 
+clientId =
+    "632WPbpNGm3zBzgCXEio2rhbbAn5sNlGZlPNH0cbBd8"
+
+
+appendClientId : String -> String
+appendClientId uri =
+    uri ++ "?client_id=" ++ clientId
+
+
+usRandomPhotoUri : String -> String
+usRandomPhotoUri uri =
+    uri ++ "photos/random"
+
+
 usApiUri : String
 usApiUri =
     "https://api.unsplash.com/"
@@ -60,7 +74,7 @@ type alias Model =
 fetchFeed : Cmd Msg
 fetchFeed =
     Http.get
-        { url = usApiUri ++ "/photos/random" ++ "?client_id=632WPbpNGm3zBzgCXEio2rhbbAn5sNlGZlPNH0cbBd8"
+        { url = usApiUri |> usRandomPhotoUri |> appendClientId
         , expect = Http.expectJson LoadFeed smallRandomPhotoDecoder
         }
 
