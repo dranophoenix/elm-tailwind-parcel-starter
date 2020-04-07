@@ -8,10 +8,6 @@ import Json.Decode exposing (Decoder, field, int, map2, map5, string, succeed)
 import Json.Decode.Pipeline exposing (required)
 
 
-
--- access key or client_id 632WPbpNGm3zBzgCXEio2rhbbAn5sNlGZlPNH0cbBd8
-
-
 clientId =
     "632WPbpNGm3zBzgCXEio2rhbbAn5sNlGZlPNH0cbBd8"
 
@@ -34,14 +30,6 @@ usApiUri =
 usRedirectUri : String
 usRedirectUri =
     "urn:ietf:wg:oauth:2.0:oob"
-
-
-
-{-
-   randomPhotoLink : String
-   randomPhotoLink =
-       "https://images.unsplash.com/profile-1584195344340-d978874b82c9image?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&cs=tinysrgb&fit=crop&h=32&w=32"
--}
 
 
 type alias RandomPhoto =
