@@ -6,6 +6,25 @@ import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 
 
+
+-- access key or client_id 632WPbpNGm3zBzgCXEio2rhbbAn5sNlGZlPNH0cbBd8
+
+
+unsplashApiUri : String
+unsplashApiUri =
+    "https://api.unsplash.com/"
+
+
+unsplashAuthUri : String
+unsplashAuthUri =
+    "https://unsplash.com/oauth/"
+
+
+usRedirectUri : String
+usRedirectUri =
+    "urn:ietf:wg:oauth:2.0:oob"
+
+
 type alias Model =
     { count : Int }
 
