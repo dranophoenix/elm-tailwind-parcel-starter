@@ -101,7 +101,7 @@ update msg model =
         ChangeAmount amount ->
             case String.toInt amount of
                 Just selectedAmount ->
-                    ( { model | count = selectedAmount }, Cmd.none )
+                    ( { model | count = selectedAmount }, fetchFeed )
 
                 Nothing ->
                     ( model, Cmd.none )
