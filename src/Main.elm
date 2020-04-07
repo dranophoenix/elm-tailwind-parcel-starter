@@ -2,7 +2,8 @@ module Main exposing (main)
 
 import Browser
 import Html exposing (Html, div, img, option, select, span, text)
-import Html.Attributes exposing (for, id, src, value)
+import Html.Attributes exposing (src, value)
+import Html.Events exposing (onInput)
 import Http
 import Json.Decode exposing (Decoder, field, int, list, map2, map5, string, succeed)
 import Json.Decode.Pipeline exposing (required)
@@ -91,11 +92,20 @@ init () =
 
 type Msg
     = LoadFeed (Result Http.Error RandomPhotos)
+    | ChangeAmount String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        ChangeAmount amount ->
+            case String.toInt amount of
+                Just selectedAmount ->
+                    ( { model | count = selectedAmount }, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
         LoadFeed (Ok randomPhotos) ->
             ( { model | randomPhotos = Just randomPhotos }, Cmd.none )
 
@@ -152,7 +162,7 @@ durationOption amount =
 viewPhotoCountInput : Int -> Html Msg
 viewPhotoCountInput count =
     select
-        []
+        [ onInput ChangeAmount ]
         (List.map durationOption (List.range 1 3))
 
 
