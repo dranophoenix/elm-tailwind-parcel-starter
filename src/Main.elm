@@ -22,9 +22,9 @@ initCount =
     2
 
 
-appendCount : String -> String
-appendCount uri =
-    uri ++ "&count=" ++ String.fromInt initCount
+appendCount : Int -> String -> String
+appendCount count uri =
+    uri ++ "&count=" ++ String.fromInt count
 
 
 usRandomPhotoUri : String -> String
@@ -73,7 +73,7 @@ type alias Model =
 fetchFeed : Cmd Msg
 fetchFeed =
     Http.get
-        { url = usApiUri |> usRandomPhotoUri |> appendClientId |> appendCount
+        { url = usApiUri |> usRandomPhotoUri |> appendClientId |> appendCount initCount
         , expect = Http.expectJson LoadFeed (list smallRandomPhotoDecoder)
         }
 
@@ -141,7 +141,13 @@ smallRandomPhotoDecoder =
 
 viewPhoto : RandomPhoto -> Html Msg
 viewPhoto randomPhoto =
-    span [] [ img [ src randomPhoto.urls.small ] [] ]
+    div []
+        [ div []
+            [ text randomPhoto.user.username ]
+        , span
+            []
+            [ img [ src randomPhoto.urls.small ] [] ]
+        ]
 
 
 viewFeed : Maybe RandomPhotos -> Html Msg
