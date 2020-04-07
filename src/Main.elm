@@ -1,8 +1,8 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, button, div, text)
-import Html.Attributes exposing (class)
+import Html exposing (Html, button, div, img)
+import Html.Attributes exposing (src)
 import Html.Events exposing (onClick)
 
 
@@ -25,13 +25,18 @@ usRedirectUri =
     "urn:ietf:wg:oauth:2.0:oob"
 
 
+randomPhotoLink : String
+randomPhotoLink =
+    "https://images.unsplash.com/profile-1584195344340-d978874b82c9image?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&cs=tinysrgb&fit=crop&h=32&w=32"
+
+
 type alias Model =
-    { count : Int }
+    { photo : String }
 
 
 initialModel : Model
 initialModel =
-    { count = 0 }
+    { photo = randomPhotoLink }
 
 
 type Msg
@@ -43,22 +48,16 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         Increment ->
-            { model | count = model.count + 1 }
+            model
 
         Decrement ->
-            { model | count = model.count - 1 }
+            model
 
 
 view : Model -> Html Msg
 view model =
     div []
-        [ button
-            [ onClick Increment
-            , class "bg-blue-400 text-white font-bold px-4 py-2 rounded"
-            ]
-            [ text "+1" ]
-        , div [] [ text <| String.fromInt model.count ]
-        , button [ onClick Decrement ] [ text "-1" ]
+        [ img [ src model.photo ] []
         ]
 
 
