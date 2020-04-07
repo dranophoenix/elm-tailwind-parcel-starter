@@ -3,6 +3,7 @@ module Main exposing (main)
 import Browser
 import Html exposing (Html, button, div, img)
 import Html.Attributes exposing (src)
+import Http
 import Json.Decode exposing (Decoder, field, string)
 
 
@@ -41,6 +42,14 @@ type alias RandomPhoto =
         }
     , view : Int
     }
+
+
+fetchFeed : Cmd Msg
+fetchFeed =
+    Http.get
+        { url = String ++ "/photos/random" ++ "?client_id=632WPbpNGm3zBzgCXEio2rhbbAn5sNlGZlPNH0cbBd8"
+        , expect = Http.expectJson LoadFeed smallRandomPhotoDecoder
+        }
 
 
 initialModel : RandomPhoto
