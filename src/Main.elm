@@ -36,11 +36,6 @@ usApiUri =
     "https://api.unsplash.com/"
 
 
-usRedirectUri : String
-usRedirectUri =
-    "urn:ietf:wg:oauth:2.0:oob"
-
-
 type alias RandomPhoto =
     { id : String
     , urls : UrlsAttrs
