@@ -1,10 +1,11 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, button, div, img)
+import Html exposing (Html, button, div, img, text)
 import Html.Attributes exposing (src)
 import Http
-import Json.Decode exposing (Decoder, field, string)
+import Json.Decode exposing (Decoder, field, int, map2, map5, string, succeed)
+import Json.Decode.Pipeline exposing (required)
 
 
 
@@ -16,48 +17,79 @@ usApiUri =
     "https://api.unsplash.com/"
 
 
-usAuthUri : String
-usAuthUri =
-    "https://unsplash.com/oauth/"
-
-
 usRedirectUri : String
 usRedirectUri =
     "urn:ietf:wg:oauth:2.0:oob"
 
 
-randomPhotoLink : String
-randomPhotoLink =
-    "https://images.unsplash.com/profile-1584195344340-d978874b82c9image?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&cs=tinysrgb&fit=crop&h=32&w=32"
+
+{-
+   randomPhotoLink : String
+   randomPhotoLink =
+       "https://images.unsplash.com/profile-1584195344340-d978874b82c9image?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&cs=tinysrgb&fit=crop&h=32&w=32"
+-}
 
 
 type alias RandomPhoto =
     { id : String
-    , urls :
-        { small : String
-        }
-    , user :
-        { id : String
-        , username : String
-        }
+    , urls : UrlsAttrs
+    , user : UserAttrs
     , view : Int
     }
+
+
+type alias UserAttrs =
+    { id : String
+    , username : String
+    }
+
+
+type alias UrlsAttrs =
+    { raw : String
+    , full : String
+    , regular : String
+    , small : String
+    , thumb : String
+    }
+
+
+type alias Model =
+    { randomPhoto : Maybe RandomPhoto }
 
 
 fetchFeed : Cmd Msg
 fetchFeed =
     Http.get
-        { url = String ++ "/photos/random" ++ "?client_id=632WPbpNGm3zBzgCXEio2rhbbAn5sNlGZlPNH0cbBd8"
+        { url = usApiUri ++ "/photos/random" ++ "?client_id=632WPbpNGm3zBzgCXEio2rhbbAn5sNlGZlPNH0cbBd8"
         , expect = Http.expectJson LoadFeed smallRandomPhotoDecoder
         }
 
 
-initialModel : RandomPhoto
+initialModel : Model
 initialModel =
-    { photo = randomPhotoLink }
+    { randomPhoto = Nothing
+
+    {-
+       Just
+           { id = ""
+           , urls =
+               { raw = ""
+               , full = ""
+               , regular = ""
+               , small = ""
+               , thumb = ""
+               }
+           , user =
+               { id = ""
+               , username = ""
+               }
+           , view = 0
+           }
+    -}
+    }
 
 
-init : () -> ( RandomPhoto, Cmd Msg )
+init : () -> ( Model, Cmd Msg )
 init () =
     ( initialModel, fetchFeed )
 
@@ -66,36 +98,64 @@ type Msg
     = LoadFeed (Result Http.Error RandomPhoto)
 
 
-update : Msg -> RandomPhoto -> RandomPhoto
-update msg randomPhoto =
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
     case msg of
-        LoadFeed _ ->
-            ( randomPhoto, Cmd.none )
+        LoadFeed (Ok randomPhoto) ->
+            ( { model | randomPhoto = Just randomPhoto }, Cmd.none )
+
+        LoadFeed (Err _) ->
+            ( model, Cmd.none )
+
+
+userAttrsDecoder : Decoder UserAttrs
+userAttrsDecoder =
+    map2 UserAttrs
+        (field "id" string)
+        (field "username" string)
+
+
+urlsAttrsDecoder : Decoder UrlsAttrs
+urlsAttrsDecoder =
+    map5 UrlsAttrs
+        (field "raw" string)
+        (field "full" string)
+        (field "regular" string)
+        (field "small" string)
+        (field "thumb" string)
 
 
 smallRandomPhotoDecoder : Decoder RandomPhoto
 smallRandomPhotoDecoder =
-    Decode.succeed RandomPhoto
+    succeed RandomPhoto
         |> required "id" string
-        |> required "urls" (required "small" string)
-        |> required "user" (required "id" string)
-        |> required "user" (required "username" string)
+        |> required "urls" urlsAttrsDecoder
+        |> required "user" userAttrsDecoder
         |> required "view" int
 
 
-view : RandomPhoto -> Html Msg
+viewFeed : Maybe RandomPhoto -> Html Msg
+viewFeed maybeRandomPhoto =
+    case maybeRandomPhoto of
+        Just randomPhoto ->
+            img [ src randomPhoto.urls.small ] []
+
+        Nothing ->
+            div [] [ text "Loading...." ]
+
+
+view : Model -> Html Msg
 view model =
     div []
-        [ img [ src model.photo ] []
-        ]
+        [ viewFeed model.randomPhoto ]
 
 
-subscriptions : RandomPhoto -> Sub Msg
-subscriptions randomPhoto =
+subscriptions : Model -> Sub Msg
+subscriptions model =
     Sub.none
 
 
-main : Program () RandomPhoto Msg
+main : Program () Model Msg
 main =
     Browser.element
         { init = init
