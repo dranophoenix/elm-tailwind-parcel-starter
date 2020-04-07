@@ -10,13 +10,13 @@ import Html.Events exposing (onClick)
 -- access key or client_id 632WPbpNGm3zBzgCXEio2rhbbAn5sNlGZlPNH0cbBd8
 
 
-unsplashApiUri : String
-unsplashApiUri =
+usApiUri : String
+usApiUri =
     "https://api.unsplash.com/"
 
 
-unsplashAuthUri : String
-unsplashAuthUri =
+usAuthUri : String
+usAuthUri =
     "https://unsplash.com/oauth/"
 
 
