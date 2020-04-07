@@ -69,26 +69,7 @@ fetchFeed =
 
 initialModel : Model
 initialModel =
-    { randomPhoto = Nothing
-
-    {-
-       Just
-           { id = ""
-           , urls =
-               { raw = ""
-               , full = ""
-               , regular = ""
-               , small = ""
-               , thumb = ""
-               }
-           , user =
-               { id = ""
-               , username = ""
-               }
-           , view = 0
-           }
-    -}
-    }
+    { randomPhoto = Nothing }
 
 
 init : () -> ( Model, Cmd Msg )
