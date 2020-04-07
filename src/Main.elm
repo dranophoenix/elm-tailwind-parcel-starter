@@ -131,7 +131,7 @@ smallRandomPhotoDecoder =
         |> required "id" string
         |> required "urls" urlsAttrsDecoder
         |> required "user" userAttrsDecoder
-        |> required "view" int
+        |> required "views" int
 
 
 viewFeed : Maybe RandomPhoto -> Html Msg
