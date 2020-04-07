@@ -57,19 +57,20 @@ initialModel =
     { photo = randomPhotoLink }
 
 
+init : () -> ( RandomPhoto, Cmd Msg )
+init () =
+    ( initialModel, fetchFeed )
+
+
 type Msg
-    = Increment
-    | Decrement
+    = LoadFeed (Result Http.Error RandomPhoto)
 
 
 update : Msg -> RandomPhoto -> RandomPhoto
-update msg model =
+update msg randomPhoto =
     case msg of
-        Increment ->
-            model
-
-        Decrement ->
-            model
+        LoadFeed _ ->
+            ( randomPhoto, Cmd.none )
 
 
 smallRandomPhotoDecoder : Decoder RandomPhoto
@@ -89,10 +90,16 @@ view model =
         ]
 
 
+subscriptions : RandomPhoto -> Sub Msg
+subscriptions randomPhoto =
+    Sub.none
+
+
 main : Program () RandomPhoto Msg
 main =
-    Browser.sandbox
-        { init = initialModel
+    Browser.element
+        { init = init
         , view = view
         , update = update
+        , subscriptions = subscriptions
         }
