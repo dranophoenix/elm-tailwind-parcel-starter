@@ -3,7 +3,7 @@ module Main exposing (main)
 import Browser
 import Html exposing (Html, button, div, img)
 import Html.Attributes exposing (src)
-import Html.Events exposing (onClick)
+import Json.Decode exposing (Decoder, field, string)
 
 
 
@@ -30,11 +30,20 @@ randomPhotoLink =
     "https://images.unsplash.com/profile-1584195344340-d978874b82c9image?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&cs=tinysrgb&fit=crop&h=32&w=32"
 
 
-type alias Model =
-    { photo : String }
+type alias RandomPhoto =
+    { id : String
+    , urls :
+        { small : String
+        }
+    , user :
+        { id : String
+        , username : String
+        }
+    , view : Int
+    }
 
 
-initialModel : Model
+initialModel : RandomPhoto
 initialModel =
     { photo = randomPhotoLink }
 
@@ -44,7 +53,7 @@ type Msg
     | Decrement
 
 
-update : Msg -> Model -> Model
+update : Msg -> RandomPhoto -> RandomPhoto
 update msg model =
     case msg of
         Increment ->
@@ -54,14 +63,24 @@ update msg model =
             model
 
 
-view : Model -> Html Msg
+smallRandomPhotoDecoder : Decoder RandomPhoto
+smallRandomPhotoDecoder =
+    Decode.succeed RandomPhoto
+        |> required "id" string
+        |> required "urls" (required "small" string)
+        |> required "user" (required "id" string)
+        |> required "user" (required "username" string)
+        |> required "view" int
+
+
+view : RandomPhoto -> Html Msg
 view model =
     div []
         [ img [ src model.photo ] []
         ]
 
 
-main : Program () Model Msg
+main : Program () RandomPhoto Msg
 main =
     Browser.sandbox
         { init = initialModel
