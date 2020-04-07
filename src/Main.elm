@@ -1,8 +1,8 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, div, img, span, text)
-import Html.Attributes exposing (src)
+import Html exposing (Html, div, img, option, select, span, text)
+import Html.Attributes exposing (for, id, src, value)
 import Http
 import Json.Decode exposing (Decoder, field, int, list, map2, map5, string, succeed)
 import Json.Decode.Pipeline exposing (required)
@@ -144,10 +144,24 @@ viewFeed maybeRandomPhotos =
             div [] [ text "Loading...." ]
 
 
+durationOption : Int -> Html Msg
+durationOption amount =
+    option [ value (String.fromInt amount) ] [ text (String.fromInt amount) ]
+
+
+viewPhotoCountInput : Int -> Html Msg
+viewPhotoCountInput count =
+    select
+        []
+        (List.map durationOption (List.range 1 3))
+
+
 view : Model -> Html Msg
 view model =
     div []
-        [ viewFeed model.randomPhotos ]
+        [ viewPhotoCountInput model.count
+        , viewFeed model.randomPhotos
+        ]
 
 
 subscriptions : Model -> Sub Msg
