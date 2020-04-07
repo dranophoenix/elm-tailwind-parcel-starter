@@ -1,10 +1,10 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, button, div, img, text)
+import Html exposing (Html, div, img, span, text)
 import Html.Attributes exposing (src)
 import Http
-import Json.Decode exposing (Decoder, field, int, map2, map5, string, succeed)
+import Json.Decode exposing (Decoder, field, int, list, map2, map5, string, succeed)
 import Json.Decode.Pipeline exposing (required)
 
 
@@ -55,21 +55,25 @@ type alias UrlsAttrs =
     }
 
 
+type alias RandomPhotos =
+    List RandomPhoto
+
+
 type alias Model =
-    { randomPhoto : Maybe RandomPhoto }
+    { randomPhotos : Maybe RandomPhotos }
 
 
 fetchFeed : Cmd Msg
 fetchFeed =
     Http.get
-        { url = usApiUri |> usRandomPhotoUri |> appendClientId
-        , expect = Http.expectJson LoadFeed smallRandomPhotoDecoder
+        { url = (usApiUri |> usRandomPhotoUri |> appendClientId) ++ "&count=2"
+        , expect = Http.expectJson LoadFeed (list smallRandomPhotoDecoder)
         }
 
 
 initialModel : Model
 initialModel =
-    { randomPhoto = Nothing }
+    { randomPhotos = Nothing }
 
 
 init : () -> ( Model, Cmd Msg )
@@ -78,14 +82,14 @@ init () =
 
 
 type Msg
-    = LoadFeed (Result Http.Error RandomPhoto)
+    = LoadFeed (Result Http.Error RandomPhotos)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        LoadFeed (Ok randomPhoto) ->
-            ( { model | randomPhoto = Just randomPhoto }, Cmd.none )
+        LoadFeed (Ok randomPhotos) ->
+            ( { model | randomPhotos = Just randomPhotos }, Cmd.none )
 
         LoadFeed (Err _) ->
             ( model, Cmd.none )
@@ -117,11 +121,16 @@ smallRandomPhotoDecoder =
         |> required "views" int
 
 
-viewFeed : Maybe RandomPhoto -> Html Msg
-viewFeed maybeRandomPhoto =
-    case maybeRandomPhoto of
-        Just randomPhoto ->
-            img [ src randomPhoto.urls.small ] []
+viewPhoto : RandomPhoto -> Html Msg
+viewPhoto randomPhoto =
+    span [] [ img [ src randomPhoto.urls.small ] [] ]
+
+
+viewFeed : Maybe RandomPhotos -> Html Msg
+viewFeed maybeRandomPhotos =
+    case maybeRandomPhotos of
+        Just randomPhotos ->
+            div [] (List.map viewPhoto randomPhotos)
 
         Nothing ->
             div [] [ text "Loading...." ]
@@ -130,7 +139,7 @@ viewFeed maybeRandomPhoto =
 view : Model -> Html Msg
 view model =
     div []
-        [ viewFeed model.randomPhoto ]
+        [ viewFeed model.randomPhotos ]
 
 
 subscriptions : Model -> Sub Msg
