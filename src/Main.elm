@@ -14,12 +14,21 @@ clientId =
 
 appendClientId : String -> String
 appendClientId uri =
-    uri ++ "?client_id=" ++ clientId
+    uri ++ "&client_id=" ++ clientId
+
+
+initCount =
+    2
+
+
+appendCount : String -> String
+appendCount uri =
+    uri ++ "&count=" ++ String.fromInt initCount
 
 
 usRandomPhotoUri : String -> String
 usRandomPhotoUri uri =
-    uri ++ "photos/random"
+    uri ++ "photos/random?"
 
 
 usApiUri : String
@@ -60,20 +69,24 @@ type alias RandomPhotos =
 
 
 type alias Model =
-    { randomPhotos : Maybe RandomPhotos }
+    { randomPhotos : Maybe RandomPhotos
+    , count : Int
+    }
 
 
 fetchFeed : Cmd Msg
 fetchFeed =
     Http.get
-        { url = (usApiUri |> usRandomPhotoUri |> appendClientId) ++ "&count=2"
+        { url = usApiUri |> usRandomPhotoUri |> appendClientId |> appendCount
         , expect = Http.expectJson LoadFeed (list smallRandomPhotoDecoder)
         }
 
 
 initialModel : Model
 initialModel =
-    { randomPhotos = Nothing }
+    { randomPhotos = Nothing
+    , count = initCount
+    }
 
 
 init : () -> ( Model, Cmd Msg )
