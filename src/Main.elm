@@ -7,29 +7,15 @@ import Html.Events exposing (onInput)
 import Http
 import Json.Decode exposing (Decoder, field, int, list, map2, map5, string, succeed)
 import Json.Decode.Pipeline exposing (required)
+import Url.Builder as Builder
 
 
 clientId =
     "632WPbpNGm3zBzgCXEio2rhbbAn5sNlGZlPNH0cbBd8"
 
 
-appendClientId : String -> String
-appendClientId uri =
-    uri ++ "&client_id=" ++ clientId
-
-
 initCount =
     2
-
-
-appendCount : Int -> String -> String
-appendCount count uri =
-    uri ++ "&count=" ++ String.fromInt count
-
-
-usRandomPhotoUri : String -> String
-usRandomPhotoUri uri =
-    uri ++ "photos/random?"
 
 
 usApiUri : String
@@ -73,7 +59,7 @@ type alias Model =
 fetchFeed : Cmd Msg
 fetchFeed =
     Http.get
-        { url = usApiUri |> usRandomPhotoUri |> appendClientId |> appendCount initCount
+        { url = Builder.crossOrigin usApiUri [ "photos", "random" ] [ Builder.string "client_id" clientId, Builder.int "count" 2 ]
         , expect = Http.expectJson LoadFeed (list smallRandomPhotoDecoder)
         }
 
