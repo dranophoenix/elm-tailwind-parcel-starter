@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import Browser
 import Html exposing (Html, div, img, option, select, span, text)
-import Html.Attributes exposing (src, value)
+import Html.Attributes exposing (class, src, value)
 import Html.Events exposing (onInput)
 import Http
 import Json.Decode exposing (Decoder, field, int, list, map2, map5, string, succeed)
@@ -168,7 +168,7 @@ durationOption amount =
 viewPhotoCountInput : Int -> Html Msg
 viewPhotoCountInput count =
     select
-        [ onInput ChangeAmount ]
+        [ onInput ChangeAmount, class "bg-blue-200" ]
         (List.map durationOption (List.range 1 3))
 
 
